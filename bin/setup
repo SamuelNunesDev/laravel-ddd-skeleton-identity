@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [[ ! -f .env ]]; then
+    cp .env.example .env
+
+    app_key_seed="$(openssl rand -base64 32)"
+    db_password="$(openssl rand -hex 24)"
+    postgres_admin_password="$(openssl rand -hex 24)"
+
+    sed -i "s|^APP_KEY=.*|APP_KEY=base64:${app_key_seed}|" .env
+    sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=${db_password}|" .env
+    sed -i "s|^POSTGRES_ADMIN_PASSWORD=.*|POSTGRES_ADMIN_PASSWORD=${postgres_admin_password}|" .env
+fi
+
+export APP_UID="${APP_UID:-$(id -u)}"
+export APP_GID="${APP_GID:-$(id -g)}"
+export APP_PORT="${APP_PORT:-8080}"
+
+docker compose build app
+docker compose run --rm --no-deps --user root app chown -R www-data:www-data vendor
+docker compose run --rm --no-deps app composer install --no-interaction --prefer-dist
+docker compose run --rm --no-deps node npm ci
+docker compose run --rm --no-deps node npm run build
+docker compose up -d --wait postgres redis mailpit
+docker compose run --rm app php artisan migrate --force
+docker compose up -d --wait app web worker scheduler
+
+curl --fail --silent --show-error "http://127.0.0.1:${APP_PORT}/health/ready" >/dev/null
+
+echo "Identity Platform is ready at http://127.0.0.1:${APP_PORT}"
+echo "Mailpit is available at http://127.0.0.1:8025"

@@ -1,0 +1,196 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Override;
+
+final class ModulesServiceProvider extends ServiceProvider
+{
+    /**
+     * @var array<int, string>|null
+     */
+    private ?array $modules = null;
+
+    #[Override]
+    public function register(): void
+    {
+        foreach ($this->providerFiles() as $providerFile) {
+            $providerClass = $this->classNameFromFile($providerFile);
+
+            /** @psalm-suppress UnresolvableInclude Module provider paths are discovered from existing files. */
+            require_once $providerFile;
+
+            if (class_exists($providerClass)) {
+                $this->app->register($providerClass);
+            }
+        }
+    }
+
+    public function boot(): void
+    {
+        foreach ($this->routeFiles() as $routeFile) {
+            $this->loadRoutesFrom($routeFile);
+        }
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function modules(): array
+    {
+        if ($this->modules !== null) {
+            return $this->modules;
+        }
+
+        $manifest = $this->manifest();
+
+        if ($manifest !== null) {
+            return $this->modules = $manifest['modules'];
+        }
+
+        $modulesPath = $this->modulesPath();
+
+        if (! is_dir($modulesPath)) {
+            return $this->modules = [];
+        }
+
+        $modules = glob($modulesPath.DIRECTORY_SEPARATOR.'*', GLOB_ONLYDIR);
+        $modules = $modules === false ? [] : $modules;
+        sort($modules);
+
+        return $this->modules = $modules;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function routeFiles(): array
+    {
+        $manifest = $this->manifest();
+
+        if ($manifest !== null) {
+            return $manifest['routes'];
+        }
+
+        $routes = [];
+
+        foreach ($this->modules() as $modulePath) {
+            $routeFile = $modulePath.DIRECTORY_SEPARATOR.'Infrastructure/Http/routes.php';
+
+            if (is_file($routeFile)) {
+                $routes[] = $routeFile;
+            }
+        }
+
+        return $routes;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function providerFiles(): array
+    {
+        $manifest = $this->manifest();
+
+        if ($manifest !== null) {
+            return $manifest['providers'];
+        }
+
+        $providers = [];
+
+        foreach ($this->modules() as $modulePath) {
+            $matches = glob($modulePath.DIRECTORY_SEPARATOR.'Infrastructure/Providers/*ServiceProvider.php');
+            $matches = $matches === false ? [] : $matches;
+            sort($matches);
+            $providers = array_merge($providers, $matches);
+        }
+
+        return $providers;
+    }
+
+    /**
+     * @return array{modules: array<int, string>, providers: array<int, string>, routes: array<int, string>}|null
+     */
+    private function manifest(): ?array
+    {
+        $path = base_path('bootstrap/cache/ddd-modules.php');
+
+        if (! is_file($path)) {
+            return null;
+        }
+
+        $manifest = require $path;
+
+        if (! is_array($manifest)) {
+            return null;
+        }
+
+        return [
+            'modules' => array_values(array_map('strval', $manifest['modules'] ?? [])),
+            'providers' => array_values(array_map('strval', $manifest['providers'] ?? [])),
+            'routes' => array_values(array_map('strval', $manifest['routes'] ?? [])),
+        ];
+    }
+
+    private function modulesPath(): string
+    {
+        $path = config('ddd.modules_path', 'app/Modules');
+
+        if (str_starts_with($path, DIRECTORY_SEPARATOR)) {
+            return $path;
+        }
+
+        return base_path($path);
+    }
+
+    private function classNameFromFile(string $file): string
+    {
+        $modulePath = dirname($file, 3);
+        $module = basename($modulePath);
+        $provider = pathinfo($file, PATHINFO_FILENAME);
+        $modulesNamespace = $this->namespaceFromPath(config('ddd.modules_path', 'app/Modules'));
+
+        return $modulesNamespace.'\\'.$module.'\\Infrastructure\\Providers\\'.$provider;
+    }
+
+    private function namespaceFromPath(string $path): string
+    {
+        $path = trim(str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
+        $segments = array_values(array_filter(explode(DIRECTORY_SEPARATOR, $path)));
+
+        if (($segments[0] ?? null) === 'app') {
+            array_shift($segments);
+
+            return rtrim($this->applicationNamespace(), '\\').$this->namespaceSuffix($segments);
+        }
+
+        return ltrim($this->namespaceSuffix($segments), '\\');
+    }
+
+    /**
+     * @param  array<int, string>  $segments
+     */
+    private function namespaceSuffix(array $segments): string
+    {
+        if ($segments === []) {
+            return '';
+        }
+
+        return '\\'.implode('\\', array_map(
+            static fn (string $segment): string => str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $segment))),
+            $segments,
+        ));
+    }
+
+    private function applicationNamespace(): string
+    {
+        try {
+            return $this->app->getNamespace();
+        } catch (\Throwable) {
+            return 'App\\';
+        }
+    }
+}

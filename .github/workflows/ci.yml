@@ -1,0 +1,173 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4']
+    services:
+      postgres:
+        image: postgres:18.4-bookworm
+        env:
+          POSTGRES_DB: identity
+          POSTGRES_USER: identity
+          POSTGRES_PASSWORD: identity
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U identity -d identity"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:8.2.7-bookworm
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      APP_ENV: testing
+      APP_KEY: base64:MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA=
+      CACHE_STORE: redis
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: identity
+      DB_USERNAME: identity
+      DB_PASSWORD: identity
+      QUEUE_CONNECTION: redis
+      REDIS_HOST: 127.0.0.1
+      SESSION_DRIVER: redis
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: intl, pdo_pgsql, redis, zip
+          coverage: none
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Validate Composer metadata
+        run: composer validate --strict
+
+      - name: Audit PHP dependencies
+        run: composer audit --locked
+
+      - name: Run empty migrations against PostgreSQL
+        run: php artisan migrate --force
+
+      - name: Check module boundaries
+        run: php artisan ddd:check
+
+      - name: Check PHP formatting
+        run: vendor/bin/pint --test
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse
+
+      - name: Run Psalm
+        run: vendor/bin/psalm --no-cache
+
+      - name: Run Psalm taint analysis
+        run: composer security:taint
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Audit Node dependencies
+        run: npm audit
+
+      - name: Lint frontend
+        run: npm run lint
+
+      - name: Type-check frontend
+        run: npm run typecheck
+
+      - name: Build frontend
+        run: npm run build
+
+  e2e:
+    name: End-to-end
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Prepare environment
+        run: cp .env.example .env
+
+      - name: Build application image
+        run: docker compose build app
+
+      - name: Install locked dependencies
+        run: |
+          docker compose run --rm --no-deps app composer install --no-interaction --prefer-dist
+          docker compose run --rm --no-deps node npm ci
+          docker compose run --rm --no-deps node npm run build
+          docker compose run --rm --no-deps app php artisan key:generate --force
+
+      - name: Start application
+        run: docker compose up -d --wait postgres redis mailpit app web
+
+      - name: Run Playwright
+        run: docker compose run --rm e2e
+
+      - name: Show service logs on failure
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Stop services
+        if: always()
+        run: docker compose down --volumes
+
+  docker-smoke:
+    name: Docker smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Validate Compose
+        run: docker compose config --quiet
+
+      - name: Build application image
+        run: docker compose build app

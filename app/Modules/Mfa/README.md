@@ -1,0 +1,67 @@
+# Mfa Module
+
+## Purpose
+
+Owns multi-factor authentication enrollment and verification.
+
+## Business capability
+
+This module represents the `Mfa` business capability.
+
+## Business boundaries
+
+Describe what this module owns and what it must not own.
+
+Suggested questions:
+
+- What business process belongs here?
+- What rules should be protected by this module?
+- What should remain outside this module?
+- Which other modules may interact with this module?
+
+## Main domain concepts
+
+List the main concepts of this module.
+
+Examples:
+
+- Entity
+- Value Object
+- Domain Event
+- Use Case
+
+## Expected use cases
+
+List expected application use cases.
+
+Examples:
+
+- CreateMfa
+- UpdateMfa
+- GetMfaDetails
+
+## Architecture
+
+This module follows Laravel DDD Toolkit conventions:
+
+```text
+Mfa/
+|-- Domain/
+|-- Application/
+|   `-- Ports/
+|       |-- In/
+|       `-- Out/
+`-- Infrastructure/
+```
+
+Ports live in `Application/Ports/In` and `Application/Ports/Out`.
+
+Adapters live in `Infrastructure/Persistence/Adapters` and `Infrastructure/Integrations`.
+
+Use `app/Modules` and `make:module`. Do not reintroduce `make:domain`.
+
+This module should preserve vertical module structure, hexagonal architecture by default, pragmatic tactical DDD and Laravel-native workflows.
+
+## Notes
+
+Keep this file updated when the module boundary changes.
