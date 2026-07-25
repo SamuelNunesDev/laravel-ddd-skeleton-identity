@@ -1047,7 +1047,7 @@ Decisões reversíveis e locais podem ser registradas aqui. Decisões arquitetur
 | 2026-07-25 | Revisão do M0 | A árvore gerada continha diretórios futuros mantidos apenas por `.gitkeep` | O repositório passa a versionar somente diretórios com arquivos reais; cada camada surge quando for implementada |
 | 2026-07-25 | Revisão do M0 | `/` é uma tela de smoke test, enquanto `/health/*` é infraestrutura operacional | A home temporária será substituída pelo módulo dono do primeiro fluxo; health permanece fora de `Installation` |
 | 2026-07-25 | Revisão do M0 | Atualizações automáticas npm e Composer são agrupadas por compatibilidade e limitadas a minor/patch | Reduz ruído e impede que majors incompatíveis sejam propostas sem uma revisão deliberada; atualizações de segurança continuam tratadas pelo Dependabot |
-| 2026-07-25 | Revisão do M0 | TypeScript permanece em 5.9 e Playwright permanece sincronizado em 1.61.1 entre pacote e imagem Docker | TypeScript 7 excede o peer range do `typescript-eslint` atual, e atualizar apenas o pacote Playwright quebraria a correspondência com a imagem de execução |
+| 2026-07-25 | Revisão do M0 | TypeScript permanece em 5.9; Playwright foi atualizado de forma coordenada para 1.62.0 no pacote e na imagem Docker | TypeScript 7 excede o peer range do `typescript-eslint` atual, e versões divergentes do pacote e da imagem Playwright impedem a execução do navegador |
 | 2026-07-25 | Revisão do M0 | Actions oficiais passam para `checkout` 7.0.1 e `setup-node` 7.0.0, fixadas por SHA | Remove avisos de runtime Node obsoleto sem abrir mão da proteção contra alteração de tags |
 
 ## 15. Riscos e respostas
