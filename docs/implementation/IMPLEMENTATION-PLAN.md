@@ -1028,6 +1028,7 @@ Esta seção é viva. Registrar fatos descobertos durante a execução que afete
 | 2026-07-25 | Revisão do M0 | O updater Docker procurava um Dockerfile na raiz, mas o arquivo versionado está em `docker/php` | O ecossistema Docker do Dependabot passa a apontar para `/docker/php` |
 | 2026-07-25 | Revisão do M0 | Uma segunda execução local do E2E ficou limitada pelo download muito lento da imagem Playwright | Build e serviços ficaram saudáveis com UID/GID alinhados; a execução do navegador aguarda a imagem ou o novo pipeline remoto |
 | 2026-07-25 | Revisão do M0 | O placeholder de `security:taint-self-test` falhava por definição antes de a fixture do M12 existir | O script foi removido do M0 e deixado comentado nas verificações; M12 deve implementá-lo, descomentá-lo e adicioná-lo à CI |
+| 2026-07-25 | Revisão do M0 | O pacote Playwright 1.62.0 foi publicado antes da imagem Docker estável correspondente; o registry continha apenas imagens 1.62.0 canary | A atualização foi adiada e pacote e imagem permanecem sincronizados em 1.61.1 |
 | 2026-07-25 | Revisão do M0 | A imagem oficial PHP 8.5 já fornece Zend OPcache; tentar recompilá-lo via `docker-php-ext-install` não produzia `modules/*` | OPcache permanece habilitado pela imagem base e somente as demais extensões são compiladas |
 
 ## 14. Registro de decisões de implementação
@@ -1049,7 +1050,7 @@ Decisões reversíveis e locais podem ser registradas aqui. Decisões arquitetur
 | 2026-07-25 | Revisão do M0 | A árvore gerada continha diretórios futuros mantidos apenas por `.gitkeep` | O repositório passa a versionar somente diretórios com arquivos reais; cada camada surge quando for implementada |
 | 2026-07-25 | Revisão do M0 | `/` é uma tela de smoke test, enquanto `/health/*` é infraestrutura operacional | A home temporária será substituída pelo módulo dono do primeiro fluxo; health permanece fora de `Installation` |
 | 2026-07-25 | Revisão do M0 | Atualizações automáticas npm e Composer são agrupadas por compatibilidade e limitadas a minor/patch | Reduz ruído e impede que majors incompatíveis sejam propostas sem uma revisão deliberada; atualizações de segurança continuam tratadas pelo Dependabot |
-| 2026-07-25 | Revisão do M0 | TypeScript permanece em 5.9 e Playwright permanece sincronizado em 1.61.1 entre pacote e imagem Docker | TypeScript 7 excede o peer range do `typescript-eslint` atual, e atualizar apenas o pacote Playwright quebraria a correspondência com a imagem de execução |
+| 2026-07-25 | Revisão do M0 | TypeScript permanece em 5.9 e Playwright permanece sincronizado em 1.61.1 entre pacote e imagem Docker | TypeScript 7 excede o peer range do `typescript-eslint` atual; Playwright 1.62 será adotado quando a imagem Docker estável correspondente estiver disponível |
 | 2026-07-25 | Revisão do M0 | Actions oficiais passam para `checkout` 7.0.1 e `setup-node` 7.0.0, fixadas por SHA | Remove avisos de runtime Node obsoleto sem abrir mão da proteção contra alteração de tags |
 
 ## 15. Riscos e respostas
