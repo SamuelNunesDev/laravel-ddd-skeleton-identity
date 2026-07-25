@@ -1131,16 +1131,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v13.21.1",
+            "version": "v13.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "303b5f8dc899f89e8c38c350b639b8fbd193ed16"
+                "reference": "d354afa45334cdac523fbc015f203a78d7e2f5c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/303b5f8dc899f89e8c38c350b639b8fbd193ed16",
-                "reference": "303b5f8dc899f89e8c38c350b639b8fbd193ed16",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/d354afa45334cdac523fbc015f203a78d7e2f5c6",
+                "reference": "d354afa45334cdac523fbc015f203a78d7e2f5c6",
                 "shasum": ""
             },
             "require": {
@@ -1354,7 +1354,7 @@
                 "issues": "https://github.com/laravel/framework/issues",
                 "source": "https://github.com/laravel/framework"
             },
-            "time": "2026-07-21T14:27:35+00:00"
+            "time": "2026-07-24T20:38:48+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -9434,16 +9434,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.31",
+            "version": "12.5.32",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "0608d157a284f15cc73b99a3327eff06b66a176d"
+                "reference": "c02591dd7840ed124a98d7770753329ad28e9f8f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/0608d157a284f15cc73b99a3327eff06b66a176d",
-                "reference": "0608d157a284f15cc73b99a3327eff06b66a176d",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c02591dd7840ed124a98d7770753329ad28e9f8f",
+                "reference": "c02591dd7840ed124a98d7770753329ad28e9f8f",
                 "shasum": ""
             },
             "require": {
@@ -9512,7 +9512,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.31"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.32"
             },
             "funding": [
                 {
@@ -9520,20 +9520,20 @@
                     "type": "other"
                 }
             ],
-            "time": "2026-07-06T14:54:16+00:00"
+            "time": "2026-07-25T06:54:13+00:00"
         },
         {
             "name": "psalm/plugin-laravel",
-            "version": "v3.15.2",
+            "version": "v3.15.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/psalm/psalm-plugin-laravel.git",
-                "reference": "8a7e43b2ca1b431d019598175d378d2d05f4d032"
+                "reference": "24d7e08deae1cebeec7915e16fbfa4b3c72ffe4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psalm/psalm-plugin-laravel/zipball/8a7e43b2ca1b431d019598175d378d2d05f4d032",
-                "reference": "8a7e43b2ca1b431d019598175d378d2d05f4d032",
+                "url": "https://api.github.com/repos/psalm/psalm-plugin-laravel/zipball/24d7e08deae1cebeec7915e16fbfa4b3c72ffe4e",
+                "reference": "24d7e08deae1cebeec7915e16fbfa4b3c72ffe4e",
                 "shasum": ""
             },
             "require": {
@@ -9603,7 +9603,7 @@
             ],
             "support": {
                 "issues": "https://github.com/psalm/psalm-plugin-laravel/issues",
-                "source": "https://github.com/psalm/psalm-plugin-laravel/tree/v3.15.2"
+                "source": "https://github.com/psalm/psalm-plugin-laravel/tree/v3.15.3"
             },
             "funding": [
                 {
@@ -9611,7 +9611,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-07-23T18:37:23+00:00"
+            "time": "2026-07-25T12:14:01+00:00"
         },
         {
             "name": "revolt/event-loop",
