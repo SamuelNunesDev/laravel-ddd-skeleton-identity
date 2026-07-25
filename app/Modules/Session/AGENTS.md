@@ -2,11 +2,30 @@
 
 ## Module responsibility
 
-This module represents the `Session` business capability.
+Own renewable human authentication sessions, context selection and revocation.
 
-## User-provided context
+## Module boundaries
 
-Owns human sessions, session selection, and revocation contracts.
+- Own web sessions, idle/absolute expiration, rotation, revocation,
+  refresh-token families and authenticated organization/module selection.
+- Do not validate password/TOTP secrets or issue access/ID tokens.
+- Consume Identity, Organization, AccessControl and Mfa contracts.
+
+## Mandatory invariants
+
+- Rotate the session identifier after login and step-up.
+- Enforce both idle and absolute expiration.
+- Disabled identities, organizations or memberships terminate applicable
+  renewable access.
+- Context selection is server-validated; request identifiers are never trusted.
+- Refresh-token rotation detects reuse and revokes the affected family.
+- Revocation data and security failures follow the TRD fail-closed policy.
+
+## Integration contracts
+
+- Provide authenticated-session/context and revocation contracts to OAuth and
+  HTTP middleware.
+- Publish login, context-change, refresh-reuse and revocation facts.
 
 ## Architecture rules
 

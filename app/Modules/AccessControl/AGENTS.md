@@ -2,11 +2,35 @@
 
 ## Module responsibility
 
-This module represents the `AccessControl` business capability.
+Own contextual authorization, role assignment and controlled delegation.
 
-## User-provided context
+## Module boundaries
 
-Owns scoped roles, permissions, assignments, and direct effects.
+- Own permissions, global/organizational roles, role composition, assignments,
+  direct effects, delegation limits and effective-permission calculation.
+- Do not authenticate identities, resolve raw organization input, own module
+  metadata or issue tokens.
+- Require validated identity, organization and module context through
+  application contracts.
+
+## Mandatory invariants
+
+- Effective permissions are `(inherited union direct grants) minus direct
+  denials`.
+- A direct grant/denial requires an active role in the same context.
+- Grant and denial are mutually exclusive for the same contextual permission.
+- Access requires at least one active role and one effective permission.
+- Roles and permissions never cross module boundaries; organizational roles
+  never cross their organization.
+- Auto-elevation and delegation beyond the actor's limit fail closed.
+- Authorization changes are transactional and never hard-delete history.
+
+## Integration contracts
+
+- Consume validated Identity, Organization and ModuleCatalog contracts.
+- Provide effective-permission and access-decision contracts to Session, OAuth
+  and administrative HTTP adapters.
+- Publish assignment, override and authorization-version changes.
 
 ## Architecture rules
 

@@ -6,39 +6,37 @@ Owns scoped roles, permissions, assignments, and direct effects.
 
 ## Business capability
 
-This module represents the `AccessControl` business capability.
+This module owns contextual authorization and controlled delegation.
 
 ## Business boundaries
 
-Describe what this module owns and what it must not own.
+It owns permission catalogs, global and organizational roles, role
+compositions, assignments, direct grants/denials, delegation limits and
+effective-permission calculation.
 
-Suggested questions:
-
-- What business process belongs here?
-- What rules should be protected by this module?
-- What should remain outside this module?
-- Which other modules may interact with this module?
+It does not authenticate identities, resolve raw organization input or issue
+tokens. It receives validated identity, organization and module context through
+application contracts.
 
 ## Main domain concepts
 
-List the main concepts of this module.
-
-Examples:
-
-- Entity
-- Value Object
-- Domain Event
-- Use Case
+- Permission
+- Role
+- RoleComposition
+- RoleAssignment
+- PermissionOverride
+- EffectivePermissions
+- DelegationLimit
 
 ## Expected use cases
 
-List expected application use cases.
-
-Examples:
-
-- CreateAccessControl
-- UpdateAccessControl
-- GetAccessControlDetails
+- CreatePermission
+- CreateRole
+- AssignRoles
+- ChangeDirectPermissionEffect
+- ActivateModuleAccess
+- ResolveEffectivePermissions
+- RevokeModuleAccess
 
 ## Architecture
 

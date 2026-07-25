@@ -2,11 +2,34 @@
 
 ## Module responsibility
 
-This module represents the `ModuleCatalog` business capability.
+Own protected module metadata, organization enablement and OAuth Client
+registration.
 
-## User-provided context
+## Module boundaries
 
-Owns the module catalog and organization module enablement.
+- Own modules, stable identifiers, audiences, allowed scopes,
+  organization-module links and OAuth Client configuration.
+- OAuth Client ownership follows the TRD; OAuth executes protocols but does not
+  own client registration.
+- Do not own permissions, roles, authorization calculation or token issuance.
+
+## Mandatory invariants
+
+- Module identifiers are stable and unique.
+- Permissions, roles, clients, audiences and scopes cannot escape their module.
+- Disabled or soft-deleted modules and organization-module links cannot
+  authorize new access.
+- Redirect URIs use exact matching.
+- Client Credentials is available only to explicitly authorized confidential
+  clients; client secrets are never recoverable after display/rotation.
+- Protected catalog records are never hard-deleted.
+
+## Integration contracts
+
+- Consume Organization context for organization-module changes.
+- Provide active module, enablement, client, audience and scope contracts to
+  AccessControl and OAuth.
+- Publish module/client lifecycle and enablement facts.
 
 ## Architecture rules
 

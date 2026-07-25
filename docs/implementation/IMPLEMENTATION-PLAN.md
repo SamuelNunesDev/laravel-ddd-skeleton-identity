@@ -248,7 +248,7 @@ Atualizar datas e evidências durante a execução.
 
 | Marco | Estado | Evidência |
 |---|---|---|
-| M0 — Bootstrap do repositório | Concluído | 2026-07-24 — setup Docker idempotente; PostgreSQL/Redis e health checks validados; Composer, `ddd:check`, Pint, PHPStan, Psalm, taint, PHPUnit, npm audit/lint/typecheck/build verdes; E2E configurado, com execução local bloqueada por reinício do download da imagem no registry |
+| M0 — Bootstrap do repositório | Concluído | 2026-07-24 — setup Docker idempotente; PostgreSQL/Redis e health checks validados; Composer, `ddd:check`, Pint, Larastan/PHPStan, Psalm Taint Analysis, PHPUnit, npm audit/lint/typecheck/build verdes; E2E configurado, com execução local bloqueada por reinício do download da imagem no registry |
 | M1 — Fundação compartilhada e auditoria mínima | Pendente | — |
 | M2 — Identidade e instalação | Pendente | — |
 | M3 — Organizações e catálogo de módulos | Pendente | — |
@@ -282,13 +282,16 @@ Uma aplicação Laravel inicia localmente, conecta a PostgreSQL e Redis, possui 
 - executar `php artisan ddd:install --merge-agents`;
 - preservar e revisar o `AGENTS.md` resultante;
 - criar os nove módulos previstos com `make:module`;
+- após a geração, manter somente diretórios que contenham arquivos reais;
+  diretórios vazios e placeholders `.gitkeep` não devem ser versionados apenas
+  para antecipar camadas futuras;
 - versionar PRD, TRD, ADRs e este plano;
 - adicionar licença MIT;
 - configurar Docker Compose;
 - configurar PostgreSQL, Redis, Mailpit e serviços web/worker/scheduler;
 - criar `.env.example` sem secrets;
 - criar endpoints de liveness e readiness;
-- configurar Pint, Larastan/PHPStan, Psalm, plugin Laravel do Psalm e Playwright;
+- configurar Pint, Larastan/PHPStan, Psalm Taint Analysis, plugin Laravel do Psalm e Playwright;
 - criar scripts Composer/npm para verificações, incluindo `security:taint` e o futuro `security:taint-self-test`;
 - criar pipeline inicial de CI;
 - habilitar `ddd:check` no CI;
@@ -318,8 +321,13 @@ docs/
 - readiness falha corretamente sem PostgreSQL/Redis e passa com dependências ativas;
 - migrations vazias executam;
 - `ddd:check` passa;
-- Pint, PHPStan, Psalm básico, PHPUnit, lint, typecheck e build executam;
+- Pint, Larastan/PHPStan, Psalm Taint Analysis, PHPUnit, lint, typecheck e build executam;
 - CI parte de checkout limpo.
+- a rota `/` permanece apenas como smoke test do frontend no M0 e deve ser
+  substituída ou movida para o módulo responsável quando o primeiro fluxo real
+  de instalação ou administração for implementado;
+- liveness e readiness permanecem na camada operacional da aplicação, fora dos
+  módulos de negócio.
 
 #### Critério de saída
 
@@ -1026,8 +1034,10 @@ Decisões reversíveis e locais podem ser registradas aqui. Decisões arquitetur
 | 2026-07-24 | M0 | Frontend Inertia/Vue mínimo, sem starter kit de autenticação | Evita antecipar autenticação, autorização e UI administrativa de marcos posteriores |
 | 2026-07-24 | M0 | Passport permanece adiado para M7 | M0 cria somente a fundação; instalar Passport agora anteciparia decisões e migrations OAuth |
 | 2026-07-24 | M0 | PostgreSQL usa papéis administrativo e de aplicação separados no schema compartilhado | Reduz privilégio do runtime sem introduzir multi-tenancy ou RLS fora do escopo |
-| 2026-07-24 | M0 | Psalm e taint usam configuração sem baseline; o self-test vulnerável permanece como guard até M12 | Mantém análise bloqueante desde M0 sem fingir que a fixture de hardening posterior existe |
+| 2026-07-24 | M0 | Psalm é executado somente em modo Taint Analysis, sem baseline; o self-test vulnerável permanece como guard até M12 | Larastan/PHPStan cobre a análise estática geral, enquanto Psalm fica restrito ao rastreamento de dados não confiáveis definido pelo TRD |
 | 2026-07-24 | M0 | `APP_PORT` pode sobrescrever a porta web local | Permite bootstrap sem interferir em outros projetos e preserva 8080 como padrão |
+| 2026-07-25 | Revisão do M0 | A árvore gerada continha diretórios futuros mantidos apenas por `.gitkeep` | O repositório passa a versionar somente diretórios com arquivos reais; cada camada surge quando for implementada |
+| 2026-07-25 | Revisão do M0 | `/` é uma tela de smoke test, enquanto `/health/*` é infraestrutura operacional | A home temporária será substituída pelo módulo dono do primeiro fluxo; health permanece fora de `Installation` |
 
 ## 15. Riscos e respostas
 
@@ -1040,7 +1050,7 @@ Decisões reversíveis e locais podem ser registradas aqui. Decisões arquitetur
 | Token grande | Uma organização/audience por token e somente permissões do módulo |
 | Hard delete acidental | Sem casos de uso destrutivos, FKs restritivas e testes de ciclo de vida |
 | Auditoria conter segredo | Redaction central e testes de payload |
-| Psalm verde sem rastrear Laravel | Plugin, sources/sinks próprios e fixture vulnerável |
+| Taint analysis verde sem rastrear Laravel | Plugin, sources/sinks próprios e fixture vulnerável |
 | Plano divergir do repositório | Validação antes de cada marco e atualização das seções vivas |
 | Implementação extensa demais | Um marco por vez, fatias verticais e critérios de saída |
 

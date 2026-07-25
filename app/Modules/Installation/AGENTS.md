@@ -2,11 +2,31 @@
 
 ## Module responsibility
 
-This module represents the `Installation` business capability.
+Coordinate installation bootstrap, explicit ownership and public presentation
+settings.
 
-## User-provided context
+## Module boundaries
 
-Coordinates first-run installation without owning identity or authorization rules.
+- Own installation state, owner reference and branding/settings.
+- Orchestrate owner creation through Identity contracts.
+- Do not persist passwords, identity profiles, MFA methods, permissions or
+  audit records.
+- Do not place liveness/readiness endpoints here; they are operational
+  application infrastructure, not installation behavior.
+
+## Mandatory invariants
+
+- The owner is explicit and never inferred from a numeric ID.
+- Installation initialization is concurrency-safe and cannot create two owners.
+- Ownership transfer requires reauthentication, MFA and audit evidence.
+- Persist only public presentation settings; infrastructure secrets stay in the
+  environment.
+
+## Integration contracts
+
+- Consume Identity, Mfa and Audit application contracts.
+- Publish installation-initialized, ownership-transferred and
+  settings-updated facts without exposing Infrastructure classes.
 
 ## Architecture rules
 

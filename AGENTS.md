@@ -40,6 +40,9 @@ Preserve the toolkit-generated architecture section and this project-specific se
 
 - Organize code vertically under `app/Modules/<Module>`.
 - Use hexagonal architecture by default.
+- Use lowercase kebab-case for static URI path segments, for example
+  `/oauth-clients` and `/password-reset`. Keep Laravel route names in dotted
+  notation and route parameter names in lowercase snake_case.
 - Keep Domain independent of Laravel, Eloquent, HTTP, queues and infrastructure.
 - Put use cases and DTOs in Application.
 - Put Ports In and Ports Out under `Application/Ports`.
@@ -102,6 +105,9 @@ Preserve the toolkit-generated architecture section and this project-specific se
 - Before editing, inspect the repository and relevant module documentation.
 - Keep `Progress`, `Discoveries` and `Decision Log` in the plan current.
 - Do not implement later milestones merely because their files are nearby.
+- Do not version empty module directories merely to advertise a future layer.
+  Add a directory when its first real implementation file is introduced, and
+  remove obsolete `.gitkeep` placeholders as the module evolves.
 - If behavior is unclear, consult the PRD and TRD before inferring.
 - If a durable architectural choice is missing, propose an ADR.
 - Keep changes focused; preserve unrelated user changes.

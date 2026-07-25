@@ -6,39 +6,33 @@ Coordinates first-run installation without owning identity or authorization rule
 
 ## Business capability
 
-This module represents the `Installation` business capability.
+This module coordinates the one-time bootstrap and lifecycle of the
+installation itself.
 
 ## Business boundaries
 
-Describe what this module owns and what it must not own.
+It owns installation state, explicit ownership and public presentation settings
+such as display names, logos, colors, locale and time zone. It orchestrates the
+first-owner flow through public application contracts.
 
-Suggested questions:
-
-- What business process belongs here?
-- What rules should be protected by this module?
-- What should remain outside this module?
-- Which other modules may interact with this module?
+It does not own identity credentials, MFA methods, organizations, permissions
+or audit storage. Those remain in their respective modules.
 
 ## Main domain concepts
 
-List the main concepts of this module.
-
-Examples:
-
-- Entity
-- Value Object
-- Domain Event
-- Use Case
+- Installation
+- InstallationSettings
+- InstallationOwner
+- InstallationState
+- BrandingSettings
 
 ## Expected use cases
 
-List expected application use cases.
-
-Examples:
-
-- CreateInstallation
-- UpdateInstallation
-- GetInstallationDetails
+- InitializeInstallation
+- RegisterInstallationOwner
+- TransferInstallationOwnership
+- UpdateInstallationSettings
+- GetPublicInstallationSettings
 
 ## Architecture
 

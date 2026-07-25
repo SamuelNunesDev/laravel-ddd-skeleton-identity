@@ -6,39 +6,37 @@ Owns the module catalog and organization module enablement.
 
 ## Business capability
 
-This module represents the `ModuleCatalog` business capability.
+This module describes the systems protected by the Identity Platform and their
+registered OAuth applications.
 
 ## Business boundaries
 
-Describe what this module owns and what it must not own.
+It owns modules, stable identifiers, audiences, allowed scopes, organization
+enablement and OAuth Client registration/configuration. This follows the TRD,
+which places OAuth Clients in the module catalog.
 
-Suggested questions:
-
-- What business process belongs here?
-- What rules should be protected by this module?
-- What should remain outside this module?
-- Which other modules may interact with this module?
+It does not execute OAuth/OIDC protocols or issue tokens; the `OAuth` module
+consumes its client and module contracts. It also does not own permissions or
+roles, which belong to `AccessControl`.
 
 ## Main domain concepts
 
-List the main concepts of this module.
-
-Examples:
-
-- Entity
-- Value Object
-- Domain Event
-- Use Case
+- Module
+- Audience
+- AllowedScope
+- OrganizationModule
+- OAuthClient
+- RedirectUri
 
 ## Expected use cases
 
-List expected application use cases.
-
-Examples:
-
-- CreateModuleCatalog
-- UpdateModuleCatalog
-- GetModuleCatalogDetails
+- RegisterModule
+- ConfigureModuleProtocolMetadata
+- EnableModuleForOrganization
+- DisableModuleForOrganization
+- RegisterOAuthClient
+- RotateOAuthClientSecret
+- RevokeOAuthClient
 
 ## Architecture
 

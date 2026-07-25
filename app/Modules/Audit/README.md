@@ -6,39 +6,33 @@ Owns append-only security and administrative audit events.
 
 ## Business capability
 
-This module represents the `Audit` business capability.
+This module provides immutable evidence of security and administrative events.
 
 ## Business boundaries
 
-Describe what this module owns and what it must not own.
+It owns append-only audit records, redacted actor/target/context snapshots,
+authorized queries and retention/expunge policy for audit data.
 
-Suggested questions:
-
-- What business process belongs here?
-- What rules should be protected by this module?
-- What should remain outside this module?
-- Which other modules may interact with this module?
+It does not decide whether another module's action is allowed and must not
+become a shared business model. Producing modules publish audit facts through a
+small application contract without depending on Audit infrastructure.
 
 ## Main domain concepts
 
-List the main concepts of this module.
-
-Examples:
-
-- Entity
-- Value Object
-- Domain Event
-- Use Case
+- AuditEvent
+- AuditActor
+- AuditTarget
+- AuditContext
+- AuditOutcome
+- RetentionPeriod
 
 ## Expected use cases
 
-List expected application use cases.
-
-Examples:
-
-- CreateAudit
-- UpdateAudit
-- GetAuditDetails
+- RecordAuditEvent
+- SearchGlobalAudit
+- SearchOrganizationAudit
+- ExportAuthorizedAudit
+- ExpungeExpiredAuditData
 
 ## Architecture
 

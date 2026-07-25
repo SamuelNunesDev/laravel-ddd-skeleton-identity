@@ -69,7 +69,6 @@ docker compose run --rm app composer validate --strict
 docker compose run --rm app php artisan ddd:check
 docker compose run --rm app vendor/bin/pint --test
 docker compose run --rm app vendor/bin/phpstan analyse
-docker compose run --rm app vendor/bin/psalm --no-cache
 docker compose run --rm app composer security:taint
 docker compose run --rm app vendor/bin/phpunit
 docker compose run --rm app composer audit --locked

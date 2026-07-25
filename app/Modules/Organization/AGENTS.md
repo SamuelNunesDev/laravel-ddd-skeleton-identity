@@ -2,11 +2,29 @@
 
 ## Module responsibility
 
-This module represents the `Organization` business capability.
+Own organizations, memberships and validated organization context.
 
-## User-provided context
+## Module boundaries
 
-Owns organizations, memberships, and validated organization context.
+- Own organization lifecycle, memberships, organization MFA policy and the
+  identity's last-organization preference.
+- Build `OrganizationContext` only after validating organization and
+  membership state.
+- Do not own identities, module definitions, roles or permissions.
+
+## Mandatory invariants
+
+- Never trust `organization_id` received from a request.
+- Context requires an active identity, organization and membership.
+- A preference is only a hint and must be revalidated for the current flow.
+- Membership history is preserved; protected records are never hard-deleted.
+- Organizational adapters have negative cross-organization tests.
+
+## Integration contracts
+
+- Consume Identity status and ModuleCatalog enablement contracts.
+- Publish organization/membership lifecycle facts.
+- Provide validated `OrganizationContext` to AccessControl, Session and OAuth.
 
 ## Architecture rules
 

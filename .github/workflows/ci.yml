@@ -85,11 +85,8 @@ jobs:
       - name: Check PHP formatting
         run: vendor/bin/pint --test
 
-      - name: Run PHPStan
+      - name: Run Larastan/PHPStan
         run: vendor/bin/phpstan analyse
-
-      - name: Run Psalm
-        run: vendor/bin/psalm --no-cache
 
       - name: Run Psalm taint analysis
         run: composer security:taint

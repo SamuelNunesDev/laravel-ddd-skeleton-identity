@@ -2,11 +2,32 @@
 
 ## Module responsibility
 
-This module represents the `Audit` business capability.
+Own immutable security and administrative audit evidence.
 
-## User-provided context
+## Module boundaries
 
-Owns append-only security and administrative audit events.
+- Own append-only audit records, actor/target/context snapshots, authorized
+  queries and retention/expunge execution.
+- Do not decide another module's authorization or import its Eloquent models.
+- Accept audit facts through a small application contract and keep producers
+  independent of Audit infrastructure.
+
+## Mandatory invariants
+
+- Application flows can append but never update or delete audit events.
+- Passwords, full tokens, OAuth/TOTP secrets and recovery codes are redacted
+  before persistence.
+- Organization-scoped queries cannot expose another organization's events.
+- Retention follows ADR-007 and the TRD; only eligible expired categories are
+  physically expunged.
+- Audit writes preserve correlation, actor, target, result and time without
+  unnecessary PII.
+
+## Integration contracts
+
+- Expose record/query ports without leaking persistence types.
+- Consume versioned audit facts from every module and publish no mutable
+  business state back to producers.
 
 ## Architecture rules
 

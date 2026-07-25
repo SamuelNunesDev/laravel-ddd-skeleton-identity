@@ -6,39 +6,35 @@ Owns organizations, memberships, and validated organization context.
 
 ## Business capability
 
-This module represents the `Organization` business capability.
+This module manages tenants and the relationship between global identities and
+those tenants.
 
 ## Business boundaries
 
-Describe what this module owns and what it must not own.
+It owns organizations, memberships, organization MFA policy, the identity's
+last-organization preference and the validated `OrganizationContext`.
 
-Suggested questions:
-
-- What business process belongs here?
-- What rules should be protected by this module?
-- What should remain outside this module?
-- Which other modules may interact with this module?
+It does not own identities, the module catalog, roles or permission
+calculation. A request-provided organization identifier is only input to
+validation and is never trusted as context.
 
 ## Main domain concepts
 
-List the main concepts of this module.
-
-Examples:
-
-- Entity
-- Value Object
-- Domain Event
-- Use Case
+- Organization
+- Membership
+- OrganizationContext
+- OrganizationPreference
+- MfaPolicy
 
 ## Expected use cases
 
-List expected application use cases.
-
-Examples:
-
 - CreateOrganization
 - UpdateOrganization
-- GetOrganizationDetails
+- DeactivateOrganization
+- AddMembership
+- EndMembership
+- ResolveOrganizationContext
+- RememberLastOrganization
 
 ## Architecture
 

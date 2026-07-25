@@ -6,38 +6,35 @@ Owns global human identity lifecycle and identity-level contracts.
 
 ## Business capability
 
-This module represents the `Identity` business capability.
+This module manages the global record and credentials of a human identity.
 
 ## Business boundaries
 
-Describe what this module owns and what it must not own.
+It owns identity profile data, normalized e-mail uniqueness, password
+credentials, temporary-password state and the active/deactivated/soft-deleted
+lifecycle.
 
-Suggested questions:
-
-- What business process belongs here?
-- What rules should be protected by this module?
-- What should remain outside this module?
-- Which other modules may interact with this module?
+It does not own memberships, roles, MFA methods, web sessions or OAuth tokens.
+Other modules refer to an identity through application contracts and stable
+identifiers, never through its Eloquent model.
 
 ## Main domain concepts
 
-List the main concepts of this module.
-
-Examples:
-
-- Entity
-- Value Object
-- Domain Event
-- Use Case
+- Identity
+- EmailAddress
+- PasswordCredential
+- TemporaryPassword
+- IdentityStatus
 
 ## Expected use cases
 
-List expected application use cases.
-
-Examples:
-
 - CreateIdentity
 - UpdateIdentity
+- DisableIdentity
+- SoftDeleteIdentity
+- RestoreIdentity
+- DefineTemporaryPassword
+- ChangePassword
 - GetIdentityDetails
 
 ## Architecture

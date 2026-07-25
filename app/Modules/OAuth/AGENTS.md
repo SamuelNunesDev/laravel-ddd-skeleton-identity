@@ -2,11 +2,33 @@
 
 ## Module responsibility
 
-This module represents the `OAuth` business capability.
+Own OAuth 2.0/OIDC protocol execution and token issuance.
 
-## User-provided context
+## Module boundaries
 
-Owns OAuth clients, token flows, OIDC integration, and service principals.
+- Own authorization/token endpoints, codes, PKCE/OIDC validation, JWT claims,
+  signing/JWKS, UserInfo, logout and Client Credentials execution.
+- OAuth Client registration/configuration belongs to ModuleCatalog.
+- Do not own passwords, MFA methods, sessions or permission catalogs; consume
+  their application contracts and revalidate before issuing credentials.
+
+## Mandatory invariants
+
+- Authorization Code requires PKCE `S256`, exact redirect matching, state and
+  nonce validation, short expiry and one-time use.
+- Password and Implicit grants are forbidden.
+- ID Tokens authenticate but never authorize APIs.
+- Access Tokens contain one validated organization/module/audience context and
+  only its effective permissions.
+- Client Credentials represents an OAuth Client, never a human identity, and
+  issues neither ID Token nor Refresh Token.
+- Signing uses RS256, `kid` and published JWKS; tokens/secrets are never logged.
+
+## Integration contracts
+
+- Consume active client/module metadata from ModuleCatalog, human session/MFA
+  state and effective permissions from AccessControl.
+- Publish authorization, issuance, replay and revocation audit facts.
 
 ## Architecture rules
 

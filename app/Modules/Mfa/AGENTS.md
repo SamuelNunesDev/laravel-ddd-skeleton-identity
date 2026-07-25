@@ -2,11 +2,30 @@
 
 ## Module responsibility
 
-This module represents the `Mfa` business capability.
+Own TOTP enrollment, recovery codes and second-factor verification.
 
-## User-provided context
+## Module boundaries
 
-Owns multi-factor authentication enrollment and verification.
+- Own MFA methods, encrypted TOTP material, recovery-code hashes, challenges and
+  successful second-factor evidence.
+- Do not own passwords, organization MFA policy, web sessions or tokens.
+- Consume identity and organization policy through application contracts.
+
+## Mandatory invariants
+
+- A TOTP method is inactive until the first code is confirmed.
+- TOTP secrets are encrypted and never logged or returned after enrollment.
+- Recovery codes are hashed, single-use and regenerated only after
+  reauthentication.
+- The installation owner and globally sensitive accounts always require MFA.
+- Organization-required MFA triggers enrollment or step-up and fails closed.
+- Administrative reset is explicitly authorized and audited.
+
+## Integration contracts
+
+- Provide enrollment state and verification/step-up contracts to Session and
+  OAuth.
+- Publish enrollment, recovery-code use and administrative reset facts.
 
 ## Architecture rules
 

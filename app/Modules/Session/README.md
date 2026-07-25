@@ -6,39 +6,34 @@ Owns human sessions, session selection, and revocation contracts.
 
 ## Business capability
 
-This module represents the `Session` business capability.
+This module manages renewable authentication state for human identities.
 
 ## Business boundaries
 
-Describe what this module owns and what it must not own.
+It owns web-session records, idle/absolute expiry, session rotation, revocation,
+refresh-token families and the authenticated selection of organization/module.
 
-Suggested questions:
-
-- What business process belongs here?
-- What rules should be protected by this module?
-- What should remain outside this module?
-- Which other modules may interact with this module?
+It does not validate passwords or MFA secrets and does not issue OAuth access or
+ID tokens. Those responsibilities remain in `Identity`, `Mfa` and `OAuth`.
 
 ## Main domain concepts
 
-List the main concepts of this module.
-
-Examples:
-
-- Entity
-- Value Object
-- Domain Event
-- Use Case
+- WebSession
+- RefreshTokenFamily
+- SessionContext
+- Revocation
+- SessionExpiry
 
 ## Expected use cases
 
-List expected application use cases.
-
-Examples:
-
-- CreateSession
-- UpdateSession
-- GetSessionDetails
+- StartWebSession
+- RotateWebSession
+- SelectOrganization
+- SelectModule
+- ListOwnSessions
+- RevokeOwnSession
+- RevokeIdentitySessions
+- RotateRefreshToken
 
 ## Architecture
 

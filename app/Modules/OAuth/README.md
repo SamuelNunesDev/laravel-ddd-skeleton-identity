@@ -6,39 +6,37 @@ Owns OAuth clients, token flows, OIDC integration, and service principals.
 
 ## Business capability
 
-This module represents the `OAuth` business capability.
+This module is the OAuth 2.0 Authorization Server and OpenID Connect provider.
 
 ## Business boundaries
 
-Describe what this module owns and what it must not own.
+It owns protocol endpoints, authorization codes, PKCE/OIDC validation, token
+issuance, JWKS, UserInfo, logout and Client Credentials execution.
 
-Suggested questions:
-
-- What business process belongs here?
-- What rules should be protected by this module?
-- What should remain outside this module?
-- Which other modules may interact with this module?
+OAuth Client registration and module/audience configuration belong to
+`ModuleCatalog`. Human authentication, MFA, sessions and effective permissions
+are consumed through application contracts and are revalidated before issuance.
 
 ## Main domain concepts
 
-List the main concepts of this module.
-
-Examples:
-
-- Entity
-- Value Object
-- Domain Event
-- Use Case
+- AuthorizationRequest
+- AuthorizationCode
+- TokenGrant
+- TokenClaims
+- SigningKey
+- ServicePrincipal
 
 ## Expected use cases
 
-List expected application use cases.
-
-Examples:
-
-- CreateOAuth
-- UpdateOAuth
-- GetOAuthDetails
+- AuthorizeWithPkce
+- ExchangeAuthorizationCode
+- IssueIdToken
+- IssueAccessToken
+- RotateRefreshToken
+- IssueClientCredentialsToken
+- PublishDiscoveryDocument
+- PublishJwks
+- RevokeOAuthGrant
 
 ## Architecture
 

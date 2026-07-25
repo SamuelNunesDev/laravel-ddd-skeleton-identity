@@ -6,39 +6,35 @@ Owns multi-factor authentication enrollment and verification.
 
 ## Business capability
 
-This module represents the `Mfa` business capability.
+This module manages second-factor enrollment and verification for human
+identities.
 
 ## Business boundaries
 
-Describe what this module owns and what it must not own.
+It owns TOTP methods, encrypted TOTP secret material, recovery-code hashes,
+verification and step-up evidence.
 
-Suggested questions:
-
-- What business process belongs here?
-- What rules should be protected by this module?
-- What should remain outside this module?
-- Which other modules may interact with this module?
+It does not own passwords, organization policy or session persistence. It
+consumes identity and policy contracts and reports successful authentication
+evidence to the session/OAuth flows.
 
 ## Main domain concepts
 
-List the main concepts of this module.
-
-Examples:
-
-- Entity
-- Value Object
-- Domain Event
-- Use Case
+- MfaMethod
+- TotpSecret
+- RecoveryCode
+- MfaChallenge
+- AuthenticationMethodReference
 
 ## Expected use cases
 
-List expected application use cases.
-
-Examples:
-
-- CreateMfa
-- UpdateMfa
-- GetMfaDetails
+- BeginTotpEnrollment
+- ConfirmTotpEnrollment
+- VerifyTotp
+- ConsumeRecoveryCode
+- RegenerateRecoveryCodes
+- ResetMfaMethod
+- RequireStepUp
 
 ## Architecture
 

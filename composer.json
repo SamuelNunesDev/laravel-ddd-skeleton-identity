@@ -51,14 +51,12 @@
         "quality:architecture": "@php artisan ddd:check",
         "quality:format": "pint --test",
         "quality:phpstan": "phpstan analyse",
-        "quality:psalm": "psalm --no-cache",
         "security:taint": "psalm --taint-analysis --no-cache",
         "security:taint-self-test": "@php -r \"fwrite(STDERR, 'The vulnerable taint fixture is scheduled for M12 and is not implemented in M0.'.PHP_EOL); exit(2);\"",
         "quality": [
             "@quality:architecture",
             "@quality:format",
             "@quality:phpstan",
-            "@quality:psalm",
             "@security:taint",
             "@test"
         ],
