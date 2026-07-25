@@ -1,4 +1,4 @@
-FROM php:8.4-fpm-bookworm
+FROM php:8.5-fpm-bookworm
 
 ARG APP_UID=1000
 ARG APP_GID=1000
@@ -10,7 +10,7 @@ RUN apt-get update \
         libpq-dev \
         libzip-dev \
         unzip \
-    && docker-php-ext-install -j"$(nproc)" intl opcache pcntl pdo_pgsql zip \
+    && docker-php-ext-install -j"$(nproc)" intl pcntl pdo_pgsql zip \
     && pecl install redis-6.3.0 \
     && docker-php-ext-enable redis \
     && rm -rf /var/lib/apt/lists/*

@@ -6,7 +6,7 @@ M0 provides the executable repository foundation only. Identity, organization, a
 
 ## Technology baseline
 
-- PHP 8.3.16 or newer in the 8.x line; the Docker runtime uses PHP 8.4
+- PHP 8.3.16 or newer in the 8.x line; the Docker runtime uses PHP 8.5
 - Laravel 13
 - PostgreSQL 18 with a shared schema
 - Redis 8
