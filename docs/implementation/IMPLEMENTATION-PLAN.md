@@ -248,7 +248,7 @@ Atualizar datas e evidências durante a execução.
 
 | Marco | Estado | Evidência |
 |---|---|---|
-| M0 — Bootstrap do repositório | Em andamento | 2026-07-25 — revisão do primeiro pipeline remoto identificou falhas de configuração em PHPUnit, permissões do E2E, auditoria npm e Dependabot; correções implementadas localmente, aguardando validação completa e novo pipeline remoto |
+| M0 — Bootstrap do repositório | Em andamento | 2026-07-25 — correções do primeiro pipeline remoto validadas; atualização para Playwright 1.62 e runtime PHP 8.5 preparada nos PRs do Dependabot, aguardando os novos pipelines remotos e a revisão final |
 | M1 — Fundação compartilhada e auditoria mínima | Pendente | — |
 | M2 — Identidade e instalação | Pendente | — |
 | M3 — Organizações e catálogo de módulos | Pendente | — |
@@ -1016,7 +1016,7 @@ Esta seção é viva. Registrar fatos descobertos durante a execução que afete
 |---|---|---|---|
 | 2026-07-24 | M0 | O host não possui PHP nem Composer utilizáveis, e o Node local está obsoleto | O fluxo local e todas as verificações foram definidos para Docker |
 | 2026-07-24 | M0 | Psalm 6.16 exige PHP 8.3.16 ou superior dentro da linha 8.3 | A versão mínima efetiva passou a ser PHP 8.3.16 e o lockfile foi resolvido nessa plataforma |
-| 2026-07-24 | M0 | Resolver o lock em PHP 8.4 selecionou Symfony 8.1, incompatível com PHP 8.3 | `config.platform.php=8.3.16` fixa Symfony 7.4 e mantém a matriz PHP 8.3/8.4 instalável |
+| 2026-07-24 | M0 | Resolver o lock em PHP 8.4 selecionou Symfony 8.1, incompatível com PHP 8.3 | `config.platform.php=8.3.16` fixa Symfony 7.4 e mantém a matriz PHP 8.3/8.4/8.5 instalável |
 | 2026-07-24 | M0 | A versão estável 4.x do plugin Laravel para Psalm depende da linha beta do Psalm 7 | M0 usa as linhas estáveis compatíveis Psalm 6.16 e `psalm/plugin-laravel` 3.15, sem baseline |
 | 2026-07-24 | M0 | Manter o CLI `shadcn-vue` 2.8 no lockfile introduziu advisories npm transitivos | O CLI não é dependência persistente; foram mantidos `components.json` e somente as dependências runtime sem advisories |
 | 2026-07-24 | M0 | O tag `nginx:1.30.4-bookworm` planejado não existe no registry oficial | O serviço web foi fixado no tag oficial existente `nginx:1.28.3` |
@@ -1029,6 +1029,7 @@ Esta seção é viva. Registrar fatos descobertos durante a execução que afete
 | 2026-07-25 | Revisão do M0 | Uma segunda execução local do E2E ficou limitada pelo download muito lento da imagem Playwright | Build e serviços ficaram saudáveis com UID/GID alinhados; a execução do navegador aguarda a imagem ou o novo pipeline remoto |
 | 2026-07-25 | Revisão do M0 | O placeholder de `security:taint-self-test` falhava por definição antes de a fixture do M12 existir | O script foi removido do M0 e deixado comentado nas verificações; M12 deve implementá-lo, descomentá-lo e adicioná-lo à CI |
 | 2026-07-25 | Revisão do M0 | O pacote Playwright 1.62.0 foi publicado antes da imagem Docker estável correspondente; o registry continha apenas imagens 1.62.0 canary | A atualização foi adiada e pacote e imagem permanecem sincronizados em 1.61.1 |
+| 2026-07-25 | Revisão do M0 | A imagem oficial PHP 8.5 já fornece Zend OPcache; tentar recompilá-lo via `docker-php-ext-install` não produzia `modules/*` | OPcache permanece habilitado pela imagem base e somente as demais extensões são compiladas |
 
 ## 14. Registro de decisões de implementação
 
@@ -1040,6 +1041,7 @@ Decisões reversíveis e locais podem ser registradas aqui. Decisões arquitetur
 | 2026-07-24 | Planejamento | Aplicação de referência em `examples/reference-client` por padrão | Mantém execução conjunta e isolamento de aplicação; pode migrar para repositório separado |
 | 2026-07-24 | Planejamento | `/oauth/jwks` canônico e `/.well-known/jwks.json` como alias | Concilia o PRD/TRD com o endpoint registrado no ADR-003 |
 | 2026-07-24 | M0 | PHP mínimo 8.3.16, runtime Docker 8.4 e CI em 8.3/8.4 | Atende Laravel 13 e a restrição estável do Psalm sem abandonar a versão mínima definida pelo TRD |
+| 2026-07-25 | Revisão do M0 | PHP mínimo 8.3.16, runtime Docker 8.5 e CI em 8.3/8.4/8.5 | Atualiza o runtime sem abandonar a versão mínima definida pelo TRD e mantém compatibilidade comprovada nas três linhas suportadas |
 | 2026-07-24 | M0 | Frontend Inertia/Vue mínimo, sem starter kit de autenticação | Evita antecipar autenticação, autorização e UI administrativa de marcos posteriores |
 | 2026-07-24 | M0 | Passport permanece adiado para M7 | M0 cria somente a fundação; instalar Passport agora anteciparia decisões e migrations OAuth |
 | 2026-07-24 | M0 | PostgreSQL usa papéis administrativo e de aplicação separados no schema compartilhado | Reduz privilégio do runtime sem introduzir multi-tenancy ou RLS fora do escopo |
