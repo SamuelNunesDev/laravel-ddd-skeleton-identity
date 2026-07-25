@@ -248,7 +248,7 @@ Atualizar datas e evidências durante a execução.
 
 | Marco | Estado | Evidência |
 |---|---|---|
-| M0 — Bootstrap do repositório | Concluído | 2026-07-24 — setup Docker idempotente; PostgreSQL/Redis e health checks validados; Composer, `ddd:check`, Pint, Larastan/PHPStan, Psalm Taint Analysis, PHPUnit, npm audit/lint/typecheck/build verdes; E2E configurado, com execução local bloqueada por reinício do download da imagem no registry |
+| M0 — Bootstrap do repositório | Em andamento | 2026-07-25 — revisão do primeiro pipeline remoto identificou falhas de configuração em PHPUnit, permissões do E2E, auditoria npm e Dependabot; correções implementadas localmente, aguardando validação completa e novo pipeline remoto |
 | M1 — Fundação compartilhada e auditoria mínima | Pendente | — |
 | M2 — Identidade e instalação | Pendente | — |
 | M3 — Organizações e catálogo de módulos | Pendente | — |
@@ -887,7 +887,8 @@ O sistema possui retenção automatizada, telemetria útil, análise de taint co
 - criar `docs/security/taint-analysis.md`;
 - configurar sources/sinks específicos de Laravel;
 - criar fixture vulnerável controlada fora do código de produção;
-- criar `composer security:taint-self-test`, que passa somente quando o Psalm encontra o fluxo vulnerável esperado;
+- criar e descomentar `composer security:taint-self-test` nas verificações obrigatórias e no `AGENTS.md`; o comando deve passar somente quando o Psalm encontra o fluxo vulnerável esperado;
+- adicionar `composer security:taint-self-test` à CI somente depois que a fixture controlada existir;
 - manter a fixture fora do scan normal de `security:taint`, para que a validação principal continue exigindo zero achados;
 - gerar SARIF no CI;
 - realizar threat modeling de login, autorização, OAuth/OIDC, MFA, recuperação e administração;
@@ -970,7 +971,8 @@ php artisan ddd:check
 vendor/bin/pint --test
 vendor/bin/phpstan analyse
 composer security:taint
-composer security:taint-self-test
+# M12: descomentar após implementar a fixture vulnerável controlada.
+# composer security:taint-self-test
 vendor/bin/phpunit
 npm run lint
 npm run typecheck
@@ -1020,6 +1022,12 @@ Esta seção é viva. Registrar fatos descobertos durante a execução que afete
 | 2026-07-24 | M0 | O tag `nginx:1.30.4-bookworm` planejado não existe no registry oficial | O serviço web foi fixado no tag oficial existente `nginx:1.28.3` |
 | 2026-07-24 | M0 | Health checks dentro do grupo `web` dependiam da sessão Redis | As rotas de health são stateless; liveness permanece 200 e readiness retorna 503 quando PostgreSQL ou Redis falha |
 | 2026-07-24 | M0 | O download local da imagem Playwright reiniciou após falha em uma camada de 791,3 MB | O teste e o job CI estão prontos, mas a execução E2E local ficou sem evidência por limitação do registry/rede |
+| 2026-07-25 | Revisão do M0 | O primeiro checkout limpo da CI não contém `tests/Unit`, e o PHPUnit falhava ao referenciar esse diretório inexistente | A suíte Unit será declarada quando o primeiro teste unitário real for criado; M0 executa a suíte Feature existente |
+| 2026-07-25 | Revisão do M0 | O lockfile inicial passou a reportar advisories transitivos de alta severidade na árvore do ESLint 9 | ESLint foi atualizado de forma coordenada para a linha 10, com `@eslint/js` declarado diretamente |
+| 2026-07-25 | Revisão do M0 | O usuário `www-data` da imagem não correspondia ao UID/GID do runner, impedindo escrita em `storage` e `bootstrap/cache` no E2E | O job exporta o UID/GID do runner antes do build para alinhar permissões do bind mount |
+| 2026-07-25 | Revisão do M0 | O updater Docker procurava um Dockerfile na raiz, mas o arquivo versionado está em `docker/php` | O ecossistema Docker do Dependabot passa a apontar para `/docker/php` |
+| 2026-07-25 | Revisão do M0 | Uma segunda execução local do E2E ficou limitada pelo download muito lento da imagem Playwright | Build e serviços ficaram saudáveis com UID/GID alinhados; a execução do navegador aguarda a imagem ou o novo pipeline remoto |
+| 2026-07-25 | Revisão do M0 | O placeholder de `security:taint-self-test` falhava por definição antes de a fixture do M12 existir | O script foi removido do M0 e deixado comentado nas verificações; M12 deve implementá-lo, descomentá-lo e adicioná-lo à CI |
 
 ## 14. Registro de decisões de implementação
 
@@ -1038,6 +1046,9 @@ Decisões reversíveis e locais podem ser registradas aqui. Decisões arquitetur
 | 2026-07-24 | M0 | `APP_PORT` pode sobrescrever a porta web local | Permite bootstrap sem interferir em outros projetos e preserva 8080 como padrão |
 | 2026-07-25 | Revisão do M0 | A árvore gerada continha diretórios futuros mantidos apenas por `.gitkeep` | O repositório passa a versionar somente diretórios com arquivos reais; cada camada surge quando for implementada |
 | 2026-07-25 | Revisão do M0 | `/` é uma tela de smoke test, enquanto `/health/*` é infraestrutura operacional | A home temporária será substituída pelo módulo dono do primeiro fluxo; health permanece fora de `Installation` |
+| 2026-07-25 | Revisão do M0 | Atualizações automáticas npm e Composer são agrupadas por compatibilidade e limitadas a minor/patch | Reduz ruído e impede que majors incompatíveis sejam propostas sem uma revisão deliberada; atualizações de segurança continuam tratadas pelo Dependabot |
+| 2026-07-25 | Revisão do M0 | TypeScript permanece em 5.9 e Playwright permanece sincronizado em 1.61.1 entre pacote e imagem Docker | TypeScript 7 excede o peer range do `typescript-eslint` atual, e atualizar apenas o pacote Playwright quebraria a correspondência com a imagem de execução |
+| 2026-07-25 | Revisão do M0 | Actions oficiais passam para `checkout` 7.0.1 e `setup-node` 7.0.0, fixadas por SHA | Remove avisos de runtime Node obsoleto sem abrir mão da proteção contra alteração de tags |
 
 ## 15. Riscos e respostas
 

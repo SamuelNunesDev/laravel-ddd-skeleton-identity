@@ -90,7 +90,15 @@ With the application stack running, execute Playwright in its browser image:
 docker compose --profile test run --rm e2e
 ```
 
-`composer security:taint-self-test` is present as an explicit guard and exits non-zero because the deliberately vulnerable fixture belongs to M12. It must not be treated as passing or added to CI before that milestone.
+The taint self-test belongs to M12 and is intentionally not registered as a
+Composer script yet. After that milestone implements the controlled vulnerable
+fixture, uncomment the command in the mandatory verification list and enable it
+in CI:
+
+```bash
+# M12: uncomment after implementing the controlled vulnerable fixture.
+# docker compose run --rm app composer security:taint-self-test
+```
 
 Health endpoints:
 

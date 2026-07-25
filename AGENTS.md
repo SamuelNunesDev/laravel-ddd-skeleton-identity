@@ -137,7 +137,8 @@ php artisan ddd:check
 vendor/bin/pint --test
 vendor/bin/phpstan analyse
 composer security:taint
-composer security:taint-self-test
+# M12: uncomment after implementing the controlled vulnerable fixture.
+# composer security:taint-self-test
 vendor/bin/phpunit
 npm run lint
 npm run typecheck
