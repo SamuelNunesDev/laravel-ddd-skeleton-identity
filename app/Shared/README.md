@@ -14,6 +14,8 @@ every module.
   correlation.
 - `TransactionManager`: application-level transaction boundary implemented by
   Laravel infrastructure.
+- `IntegrationEventPublisher`: transactional outbox writer for versioned events
+  whose delivery has an external or cross-module effect.
 
 Business concepts must remain in their owning module. Adding a class here
 requires the concept to be truly cross-cutting and semantically identical for
@@ -26,3 +28,7 @@ replaced.
 Sensitive operations that require atomic audit use `TransactionManager` to
 wrap both the business state change and the Audit module's
 `RecordAuditEvent::record()` call.
+
+Lifecycle events are appended to `outbox_messages` in the same transaction as
+state and audit changes. Delivery workers and consumers belong to the
+milestones that introduce those integrations.

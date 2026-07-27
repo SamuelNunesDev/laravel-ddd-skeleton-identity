@@ -76,7 +76,7 @@ jobs:
       - name: Audit PHP dependencies
         run: composer audit --locked
 
-      - name: Run empty migrations against PostgreSQL
+      - name: Run migrations against PostgreSQL
         run: php artisan migrate --force
 
       - name: Check module boundaries
