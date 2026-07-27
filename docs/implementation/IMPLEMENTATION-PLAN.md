@@ -250,7 +250,7 @@ Atualizar datas e evidências durante a execução.
 |---|---|---|
 | M0 — Bootstrap do repositório | Concluído | 2026-07-27 — encerrado por decisão explícita do mantenedor após validação local de build, migrations, arquitetura, análise estática, taint, testes, frontend e health checks; a limitação local de download da imagem Playwright permanece registrada em Descobertas |
 | M1 — Fundação compartilhada e auditoria mínima | Concluído | 2026-07-27 — primitivas compartilhadas, correlação HTTP, contrato público de auditoria, redaction, adapter PostgreSQL append-only e atomicidade validados por 21 testes e 71 assertions |
-| M2 — Identidade e instalação | Pendente | — |
+| M2 — Identidade e instalação | Concluído | 2026-07-27 — identidade global, credencial temporária Argon2id, instalação idempotente, proprietário protegido, personalização pública completa, recuperação auditada e outbox transacional validados; suíte PostgreSQL passou duas vezes consecutivas com 39 testes e 141 assertions |
 | M3 — Organizações e catálogo de módulos | Pendente | — |
 | M4 — Autorização e delegação | Pendente | — |
 | M5 — Sessões e autenticação humana | Pendente | — |
@@ -1033,6 +1033,10 @@ Esta seção é viva. Registrar fatos descobertos durante a execução que afete
 | 2026-07-27 | Encerramento do M0 | A validação local passou em build, migrations, `ddd:check`, Pint, PHPStan, Psalm Taint, PHPUnit, instalação npm, lint, typecheck, build e health checks reais; o download local da imagem Playwright continuou lento | O mantenedor aceitou explicitamente a evidência disponível e autorizou marcar M0 como concluído e iniciar M1 |
 | 2026-07-27 | M1 | Auditoria mínima é persistida no mesmo PostgreSQL das operações sensíveis e não possui efeito externo neste marco | Gravações permanecem síncronas, fail-closed e participantes da transação do chamador; outbox fica adiada até existir entrega externa real |
 | 2026-07-27 | M1 | A CI executa `migrate` antes de uma suíte que usa `RefreshDatabase`, enquanto funções PostgreSQL sobrevivem ao descarte das tabelas | A função do trigger append-only usa `CREATE OR REPLACE`; a sequência `migrate` + PHPUnit e uma segunda execução consecutiva passaram em banco isolado |
+| 2026-07-27 | M2 | Desativação, soft delete e troca de credencial passam a produzir eventos com efeitos futuros sobre sessões e tokens | A condição que adiava a outbox no M1 deixou de existir; M2 introduz persistência transacional de eventos versionados, sem antecipar o worker de entrega |
+| 2026-07-27 | M2 | A lista resumida do plano não enumerava todos os campos públicos exigidos pela HU-014 no PRD | A personalização foi conferida pela precedência documental e passou a incluir descrição institucional, cor de destaque, remetente público e URLs legais, além dos campos já planejados |
+| 2026-07-27 | M2 | Uma violação de trigger esperada aborta a transação PostgreSQL usada por `RefreshDatabase` | Testes de hard delete isolam cada tentativa em savepoint e comprovam a proteção sem invalidar as asserções seguintes |
+| 2026-07-27 | M2 | As novas funções de proteção contra hard delete também sobrevivem ao descarte das tabelas entre execuções da suíte | As funções usam `CREATE OR REPLACE`; migrations e duas execuções consecutivas do PHPUnit passaram em banco PostgreSQL recriado |
 
 ## 14. Registro de decisões de implementação
 
@@ -1057,6 +1061,10 @@ Decisões reversíveis e locais podem ser registradas aqui. Decisões arquitetur
 | 2026-07-25 | Revisão do M0 | Actions oficiais passam para `checkout` 7.0.1 e `setup-node` 7.0.0, fixadas por SHA | Remove avisos de runtime Node obsoleto sem abrir mão da proteção contra alteração de tags |
 | 2026-07-27 | Encerramento do M0 | O mantenedor autorizou concluir o marco com a evidência local disponível | A limitação de download do Playwright não bloqueia mais a passagem explícita para M1, mas continua documentada sem ser apresentada como check executado |
 | 2026-07-27 | M1 | Não criar outbox sem um efeito externo concreto | O adapter de auditoria usa a conexão PostgreSQL corrente e participa da transação do caso de uso; uma outbox será introduzida somente quando entrega assíncrona confiável for necessária |
+| 2026-07-27 | M2 | Senhas administradas pelo módulo Identity usam política configurável com mínimo padrão de 12 caracteres e limite técnico de 4096 bytes | O PRD não fixa complexidade; o limite local evita credenciais triviais e abuso de recursos sem impor composição arbitrária |
+| 2026-07-27 | M2 | Restaurar uma identidade não reativa autenticação automaticamente | A identidade restaurada permanece desativada e exige reativação explícita e auditada |
+| 2026-07-27 | M2 | Introduzir outbox somente agora que eventos de ciclo de vida possuem consumidores de segurança futuros | Estado, auditoria e mensagem versionada são gravados na mesma transação; entrega e consumo ficam nos marcos donos das integrações |
+| 2026-07-27 | M2 | Expor contratos backend sem criar endpoints administrativos ainda | Autorização server-side e painel pertencem a M4 e M10; antecipar rotas administrativas no M2 criaria operações sensíveis sem o catálogo de permissões |
 
 ## 15. Riscos e respostas
 

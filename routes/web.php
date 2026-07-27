@@ -2,7 +2,4 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-
-Route::get('/', fn () => Inertia::render('Home'))->name('home');
+// Business-facing web routes are owned by their modules.

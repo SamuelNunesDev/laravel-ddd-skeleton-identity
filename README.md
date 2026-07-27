@@ -3,9 +3,11 @@
 Cloneable Laravel 13 skeleton for modular systems, with the architecture and delivery plan for an embedded Identity Platform.
 
 M0 provides the executable repository foundation. M1 adds shared primitives,
-HTTP correlation and the minimal append-only audit contract. Identity,
-organization, authorization, MFA, OAuth/OIDC and administrative capabilities
-remain reserved for their documented milestones.
+HTTP correlation and the minimal append-only audit contract. M2 implements the
+global identity lifecycle, Argon2id temporary credentials, idempotent
+installation ownership, public presentation settings and transactional
+integration outbox. Organizations, authorization, sessions, MFA, OAuth/OIDC
+and administrative UI remain reserved for their documented milestones.
 
 ## Technology baseline
 
@@ -30,7 +32,9 @@ From a clean clone:
 ./bin/setup
 ```
 
-The script creates an untracked `.env`, generates local-only secrets, builds the containers, installs locked dependencies, runs the empty migrations, starts the required services, and checks readiness.
+The script creates an untracked `.env`, generates local-only secrets, builds
+the containers, installs locked dependencies, runs the migrations, starts the
+required services, and checks readiness.
 
 Port 8080 is the default. If it is already in use, select another local port without editing tracked files:
 
@@ -124,9 +128,13 @@ Session       OAuth         Audit
 
 Each follows the Laravel DDD Toolkit hexagonal preset. Domain remains
 independent of Laravel and infrastructure; inter-module access must use
-application contracts or versioned integration events. The `Audit` module now
-exposes its application contract without leaking its PostgreSQL adapter; see
-[`app/Modules/Audit/README.md`](app/Modules/Audit/README.md).
+application contracts or versioned integration events. `Identity`,
+`Installation` and `Audit` expose application contracts without leaking their
+PostgreSQL adapters:
+
+- [`app/Modules/Identity/README.md`](app/Modules/Identity/README.md)
+- [`app/Modules/Installation/README.md`](app/Modules/Installation/README.md)
+- [`app/Modules/Audit/README.md`](app/Modules/Audit/README.md)
 
 Read these sources before implementation:
 
