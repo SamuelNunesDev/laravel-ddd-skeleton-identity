@@ -2,7 +2,10 @@
 
 Cloneable Laravel 13 skeleton for modular systems, with the architecture and delivery plan for an embedded Identity Platform.
 
-M0 provides the executable repository foundation only. Identity, organization, authorization, MFA, OAuth/OIDC, audit, and administrative capabilities are intentionally reserved for their documented milestones.
+M0 provides the executable repository foundation. M1 adds shared primitives,
+HTTP correlation and the minimal append-only audit contract. Identity,
+organization, authorization, MFA, OAuth/OIDC and administrative capabilities
+remain reserved for their documented milestones.
 
 ## Technology baseline
 
@@ -111,7 +114,7 @@ Liveness verifies the PHP process only. Readiness checks PostgreSQL and Redis, r
 
 ## Architecture
 
-The repository contains nine empty capability shells under `app/Modules`:
+The repository contains nine capability modules under `app/Modules`:
 
 ```text
 Installation  Identity      Organization
@@ -119,7 +122,11 @@ ModuleCatalog AccessControl Mfa
 Session       OAuth         Audit
 ```
 
-Each follows the Laravel DDD Toolkit hexagonal preset. Domain remains independent of Laravel and infrastructure; inter-module access must use application contracts or versioned integration events.
+Each follows the Laravel DDD Toolkit hexagonal preset. Domain remains
+independent of Laravel and infrastructure; inter-module access must use
+application contracts or versioned integration events. The `Audit` module now
+exposes its application contract without leaking its PostgreSQL adapter; see
+[`app/Modules/Audit/README.md`](app/Modules/Audit/README.md).
 
 Read these sources before implementation:
 

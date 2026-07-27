@@ -248,8 +248,8 @@ Atualizar datas e evidências durante a execução.
 
 | Marco | Estado | Evidência |
 |---|---|---|
-| M0 — Bootstrap do repositório | Em andamento | 2026-07-25 — correções do primeiro pipeline remoto validadas; atualização para Playwright 1.62 e runtime PHP 8.5 preparada nos PRs do Dependabot, aguardando os novos pipelines remotos e a revisão final |
-| M1 — Fundação compartilhada e auditoria mínima | Pendente | — |
+| M0 — Bootstrap do repositório | Concluído | 2026-07-27 — encerrado por decisão explícita do mantenedor após validação local de build, migrations, arquitetura, análise estática, taint, testes, frontend e health checks; a limitação local de download da imagem Playwright permanece registrada em Descobertas |
+| M1 — Fundação compartilhada e auditoria mínima | Concluído | 2026-07-27 — primitivas compartilhadas, correlação HTTP, contrato público de auditoria, redaction, adapter PostgreSQL append-only e atomicidade validados por 21 testes e 71 assertions |
 | M2 — Identidade e instalação | Pendente | — |
 | M3 — Organizações e catálogo de módulos | Pendente | — |
 | M4 — Autorização e delegação | Pendente | — |
@@ -1030,6 +1030,9 @@ Esta seção é viva. Registrar fatos descobertos durante a execução que afete
 | 2026-07-25 | Revisão do M0 | O placeholder de `security:taint-self-test` falhava por definição antes de a fixture do M12 existir | O script foi removido do M0 e deixado comentado nas verificações; M12 deve implementá-lo, descomentá-lo e adicioná-lo à CI |
 | 2026-07-25 | Revisão do M0 | O pacote Playwright 1.62.0 foi publicado antes da imagem Docker estável correspondente; o registry continha apenas imagens 1.62.0 canary | A atualização foi adiada e pacote e imagem permanecem sincronizados em 1.61.1 |
 | 2026-07-25 | Revisão do M0 | A imagem oficial PHP 8.5 já fornece Zend OPcache; tentar recompilá-lo via `docker-php-ext-install` não produzia `modules/*` | OPcache permanece habilitado pela imagem base e somente as demais extensões são compiladas |
+| 2026-07-27 | Encerramento do M0 | A validação local passou em build, migrations, `ddd:check`, Pint, PHPStan, Psalm Taint, PHPUnit, instalação npm, lint, typecheck, build e health checks reais; o download local da imagem Playwright continuou lento | O mantenedor aceitou explicitamente a evidência disponível e autorizou marcar M0 como concluído e iniciar M1 |
+| 2026-07-27 | M1 | Auditoria mínima é persistida no mesmo PostgreSQL das operações sensíveis e não possui efeito externo neste marco | Gravações permanecem síncronas, fail-closed e participantes da transação do chamador; outbox fica adiada até existir entrega externa real |
+| 2026-07-27 | M1 | A CI executa `migrate` antes de uma suíte que usa `RefreshDatabase`, enquanto funções PostgreSQL sobrevivem ao descarte das tabelas | A função do trigger append-only usa `CREATE OR REPLACE`; a sequência `migrate` + PHPUnit e uma segunda execução consecutiva passaram em banco isolado |
 
 ## 14. Registro de decisões de implementação
 
@@ -1052,6 +1055,8 @@ Decisões reversíveis e locais podem ser registradas aqui. Decisões arquitetur
 | 2026-07-25 | Revisão do M0 | Atualizações automáticas npm e Composer são agrupadas por compatibilidade e limitadas a minor/patch | Reduz ruído e impede que majors incompatíveis sejam propostas sem uma revisão deliberada; atualizações de segurança continuam tratadas pelo Dependabot |
 | 2026-07-25 | Revisão do M0 | TypeScript permanece em 5.9 e Playwright permanece sincronizado em 1.61.1 entre pacote e imagem Docker | TypeScript 7 excede o peer range do `typescript-eslint` atual; Playwright 1.62 será adotado quando a imagem Docker estável correspondente estiver disponível |
 | 2026-07-25 | Revisão do M0 | Actions oficiais passam para `checkout` 7.0.1 e `setup-node` 7.0.0, fixadas por SHA | Remove avisos de runtime Node obsoleto sem abrir mão da proteção contra alteração de tags |
+| 2026-07-27 | Encerramento do M0 | O mantenedor autorizou concluir o marco com a evidência local disponível | A limitação de download do Playwright não bloqueia mais a passagem explícita para M1, mas continua documentada sem ser apresentada como check executado |
+| 2026-07-27 | M1 | Não criar outbox sem um efeito externo concreto | O adapter de auditoria usa a conexão PostgreSQL corrente e participa da transação do caso de uso; uma outbox será introduzida somente quando entrega assíncrona confiável for necessária |
 
 ## 15. Riscos e respostas
 
