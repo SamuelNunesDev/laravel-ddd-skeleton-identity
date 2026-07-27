@@ -6,8 +6,11 @@ M0 provides the executable repository foundation. M1 adds shared primitives,
 HTTP correlation and the minimal append-only audit contract. M2 implements the
 global identity lifecycle, Argon2id temporary credentials, idempotent
 installation ownership, public presentation settings and transactional
-integration outbox. Organizations, authorization, sessions, MFA, OAuth/OIDC
-and administrative UI remain reserved for their documented milestones.
+integration outbox. M3 adds organizations, membership history, validated
+organization context, module metadata, audiences/scopes, organization-module
+enablement and a centrally revalidated organization preference. Authorization,
+sessions, MFA execution, OAuth/OIDC and administrative UI remain reserved for
+their documented milestones.
 
 ## Technology baseline
 

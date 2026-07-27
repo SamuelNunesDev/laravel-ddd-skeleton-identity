@@ -251,7 +251,7 @@ Atualizar datas e evidências durante a execução.
 | M0 — Bootstrap do repositório | Concluído | 2026-07-27 — encerrado por decisão explícita do mantenedor após validação local de build, migrations, arquitetura, análise estática, taint, testes, frontend e health checks; a limitação local de download da imagem Playwright permanece registrada em Descobertas |
 | M1 — Fundação compartilhada e auditoria mínima | Concluído | 2026-07-27 — primitivas compartilhadas, correlação HTTP, contrato público de auditoria, redaction, adapter PostgreSQL append-only e atomicidade validados por 21 testes e 71 assertions |
 | M2 — Identidade e instalação | Concluído | 2026-07-27 — identidade global, credencial temporária Argon2id, instalação idempotente, proprietário protegido, personalização pública completa, recuperação auditada e outbox transacional validados; suíte PostgreSQL passou duas vezes consecutivas com 39 testes e 141 assertions |
-| M3 — Organizações e catálogo de módulos | Pendente | — |
+| M3 — Organizações e catálogo de módulos | Concluído | 2026-07-27 — contexto organizacional validado, lifecycle histórico de organizações/memberships, preferência revalidada, catálogo normalizado, audiences/scopes e habilitações isoladas; suíte PostgreSQL passou duas vezes consecutivas com 55 testes e 200 assertions |
 | M4 — Autorização e delegação | Pendente | — |
 | M5 — Sessões e autenticação humana | Pendente | — |
 | M6 — MFA e conclusão da instalação | Pendente | — |
@@ -1037,6 +1037,10 @@ Esta seção é viva. Registrar fatos descobertos durante a execução que afete
 | 2026-07-27 | M2 | A lista resumida do plano não enumerava todos os campos públicos exigidos pela HU-014 no PRD | A personalização foi conferida pela precedência documental e passou a incluir descrição institucional, cor de destaque, remetente público e URLs legais, além dos campos já planejados |
 | 2026-07-27 | M2 | Uma violação de trigger esperada aborta a transação PostgreSQL usada por `RefreshDatabase` | Testes de hard delete isolam cada tentativa em savepoint e comprovam a proteção sem invalidar as asserções seguintes |
 | 2026-07-27 | M2 | As novas funções de proteção contra hard delete também sobrevivem ao descarte das tabelas entre execuções da suíte | As funções usam `CREATE OR REPLACE`; migrations e duas execuções consecutivas do PHPUnit passaram em banco PostgreSQL recriado |
+| 2026-07-27 | M3 | A parte do RF-013 pertencente ao M3 termina na aplicabilidade estrutural; papéis e permissões ainda não existem | A seleção valida identidade, organização, membership, módulo, habilitação e versão de autorização; M4 adicionará papéis e permissões efetivas |
+| 2026-07-27 | M3 | Memberships e habilitações organização-módulo precisam preservar cada período de validade | Readmissão e reabilitação criam novas linhas, enquanto encerramento mantém o histórico e índices parciais impedem mais de um período ativo |
+| 2026-07-27 | M3 | Audiences e scopes permitidos são metadados normalizados com ciclo de vida próprio | Atualizações aposentam metadados removidos em vez de apagá-los, preservando referências históricas e a proibição de hard delete |
+| 2026-07-27 | M3 | As funções PostgreSQL de proteção do novo catálogo também sobrevivem aos ciclos de `RefreshDatabase` | Migrations usam `CREATE OR REPLACE`; duas execuções consecutivas da suíte completa passaram no banco PostgreSQL temporário |
 
 ## 14. Registro de decisões de implementação
 
@@ -1065,6 +1069,12 @@ Decisões reversíveis e locais podem ser registradas aqui. Decisões arquitetur
 | 2026-07-27 | M2 | Restaurar uma identidade não reativa autenticação automaticamente | A identidade restaurada permanece desativada e exige reativação explícita e auditada |
 | 2026-07-27 | M2 | Introduzir outbox somente agora que eventos de ciclo de vida possuem consumidores de segurança futuros | Estado, auditoria e mensagem versionada são gravados na mesma transação; entrega e consumo ficam nos marcos donos das integrações |
 | 2026-07-27 | M2 | Expor contratos backend sem criar endpoints administrativos ainda | Autorização server-side e painel pertencem a M4 e M10; antecipar rotas administrativas no M2 criaria operações sensíveis sem o catálogo de permissões |
+| 2026-07-27 | M3 | A aplicabilidade estrutural cobre identidade, organização, membership, módulo e habilitação; papéis e permissões permanecem fora do M3 | M4 é o marco proprietário do cálculo efetivo e completará a filtragem exigida pelo RF-013 sem antecipar autorização incompleta |
+| 2026-07-27 | M3 | `Organization` define a porta de disponibilidade de módulos e `ModuleCatalog` fornece o adapter | Preserva a direção `ModuleCatalog → Organization`, evita ciclo entre módulos e impede consultas diretas às tabelas alheias |
+| 2026-07-27 | M3 | Identificadores de organização e módulo são imutáveis e globalmente únicos | Evita ambiguidade histórica e mantém identificadores estáveis para integrações, auditoria e referências futuras |
+| 2026-07-27 | M3 | Restaurar organização ou módulo não os reativa automaticamente | A restauração recupera o registro ainda desativado e exige reativação explícita e auditada |
+| 2026-07-27 | M3 | Readmissão de membership e reabilitação de módulo criam novos períodos de validade | O histórico permanece íntegro sem reutilizar ou sobrescrever relações encerradas |
+| 2026-07-27 | M3 | Expor contratos de aplicação sem criar endpoints administrativos | As operações ficam disponíveis para composição interna, mas rotas sensíveis aguardam a autorização server-side do M4 |
 
 ## 15. Riscos e respostas
 
