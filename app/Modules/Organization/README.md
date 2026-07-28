@@ -26,15 +26,42 @@ validation and is never trusted as context.
 - OrganizationPreference
 - MfaPolicy
 
-## Expected use cases
+## Implemented application contracts
 
-- CreateOrganization
-- UpdateOrganization
-- DeactivateOrganization
-- AddMembership
-- EndMembership
-- ResolveOrganizationContext
-- RememberLastOrganization
+- `ManageOrganizations`: creates, reads, updates, deactivates, reactivates,
+  soft deletes and restores organizations.
+- `ManageMemberships`: creates and ends memberships and lists their preserved
+  history inside a validated context.
+- `ResolveOrganizationContext`: creates an immutable context only after
+  validating the current identity, organization, membership and optional
+  module enablement.
+- `OrganizationSelection`: lists structurally applicable organizations and
+  modules, stores one organization preference per identity and revalidates that
+  preference before reuse.
+
+Organization and membership identifiers use UUID v7. Organization identifiers
+are immutable and globally unique. MFA policy is either `required`
+(`OBRIGATÓRIO`) or `optional` (`OPCIONAL`).
+
+Ending a membership preserves its original validity period; a later admission
+creates a new row. Restoring an organization leaves it disabled until an
+explicit reactivation. Protected organization and membership rows reject hard
+delete at the database boundary.
+
+## Context and module boundary
+
+`OrganizationContext` carries identity, organization, optional module, source
+and the current global authorization version. A request-provided identifier is
+never itself a context.
+
+The ModuleCatalog module implements Organization's outbound module-availability
+port. Organization never queries catalog tables. M3 selection is intentionally
+structural: M4 will additionally require active roles and effective
+permissions before treating a module as accessible.
+
+All changes are audited with organization scope and publish versioned outbox
+messages in the same transaction. Administrative HTTP endpoints remain
+deferred until M4 can authorize them on the server.
 
 ## Architecture
 
@@ -52,7 +79,8 @@ Organization/
 
 Ports live in `Application/Ports/In` and `Application/Ports/Out`.
 
-Adapters live in `Infrastructure/Persistence/Adapters` and `Infrastructure/Integrations`.
+Adapters live in `Infrastructure/Persistence/Adapters` and
+`Infrastructure/Integrations`.
 
 Use `app/Modules` and `make:module`. Do not reintroduce `make:domain`.
 
